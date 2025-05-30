@@ -5,6 +5,7 @@ export default [
         route( 'dashboard', 'routes/admin/dashboard.tsx'),
         route( 'all-users', 'routes/admin/all-users.tsx'),
         route( 'zin', 'routes/admin/zin.tsx'),
+        route('*', 'routes/admin/not-found.tsx'),  // Catch all unmatched routes
         
     ]),
     
