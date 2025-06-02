@@ -3,6 +3,10 @@ import { Header } from 'components'
 import React, { useState } from 'react'
 import type { Route } from './+types/create-trip';
 import { useNavigate } from 'react-router';
+import { comboBoxItems, selectItems } from '~/constants';
+import { formatKey } from '~/lib/utils';
+import {world_map} from "~/constants/world_map";
+import {LayerDirective, LayersDirective, MapsComponent} from "@syncfusion/ej2-react-maps";
 
 export const loader = async () => {
     const response = await fetch('https://restcountries.com/v3.1/all');
@@ -37,6 +41,14 @@ const CreateTrip = ({ loaderData }: Route.ComponentProps) => {
         text: country.name,
         value: country.value,
     }))
+
+    const mapData = [
+        {
+            country: formData.country,
+            color: '#EA382E',
+            coordinates: countries.find((c:Country) => c.name === formData.country)?.coordinates || []
+        }
+    ]
 
     
   return (
@@ -75,6 +87,68 @@ const CreateTrip = ({ loaderData }: Route.ComponentProps) => {
                             )
                         }}
                     />
+                </div>
+
+                <div>
+                    <label htmlFor="duration">Duration</label>
+                    <input
+                        id='duration'
+                        name='duration'
+                        type='number'
+                        placeholder='Enter a number of days'
+                        className='form-input placeholder:text-gray-100'
+                        onChange={(e) => handleChange('duration', Number(e.target.value))}
+                    />
+                </div>
+
+                {selectItems.map((key) => (
+                    <div key={key}>
+                        <label htmlFor={key}>{formatKey(key)}</label>
+
+                        <ComboBoxComponent
+                            id={key}
+                            dataSource={comboBoxItems[key].map((item) => ({
+                                text: item,
+                                value: item,
+                            }))}
+                            fields={{ text: 'text', value: 'value' }}
+                            placeholder={`select ${formatKey(key)}`}
+                            change={(e: {value: string | undefined}) => {
+                                if(e.value){
+                                    handleChange(key, e.value)
+                                }
+                            }}
+                            allowFiltering
+                            filtering={(e) => {
+                                const query = e.text.toLowerCase();
+
+                                e.updateData(
+                                    comboBoxItems[key]
+                                        .filter((item) => item.toLowerCase().includes(query))
+                                        .map(((item) => ({
+                                            text: item,
+                                            value: item,
+                                        }))))}}
+                            className='combo-box'
+                        />
+                    </div>
+                ))}
+
+                <div>
+                    <label htmlFor="location">
+                        Location on the world map
+                    </label>
+                    <MapsComponent>
+                        <LayersDirective>
+                            <LayerDirective
+                                shapeData={world_map}
+                                dataSource={mapData}
+                                shapePropertyPath="name"
+                                shapeDataPath="country"
+                                shapeSettings={{ colorValuePath: "color", fill: "#E5E5E5"}}
+                            />
+                        </LayersDirective>
+                    </MapsComponent>
                 </div>
             </form>
          </section>
