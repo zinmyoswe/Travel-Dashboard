@@ -9,6 +9,7 @@ export default [
         route( 'zin', 'routes/admin/zin.tsx'),
         route( 'trips', 'routes/admin/trips.tsx'),
         route( 'trips/create', 'routes/admin/create-trip.tsx'),
+        route( 'trips/:tripId', 'routes/admin/trip-detail.tsx'),
         route('*', 'routes/admin/not-found.tsx'),  // Catch all unmatched routes
         
     ]),
